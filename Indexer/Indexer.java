@@ -29,26 +29,20 @@ public class Indexer {
     private static void readFile(Path pathToFile) throws IndexerException {
         try {
             Files.lines(pathToFile).forEach((String line) -> {
-                System.out.println(line);
-
-                Pattern  pattern = Pattern.compile("\\p{L}+");
+                Pattern pattern = Pattern.compile("\\p{L}+");
                 Matcher matcher = pattern.matcher(line);
-                while(matcher.find()) {
-                    String a = matcher.group();
-                    System.out.println(a);
-                }
-
 
                 // extract words
+                while (matcher.find()) {
+                    Word word = new Word(matcher.group());
 
-                // for each word
-                // remove stop words
-                // generate and save terms
+                    if (!word.isShort() && !word.isStopWord()) {
+                        word.save();
+                    }
+                }
             });
         } catch (IOException ex) {
             throw new IndexerException("Cannot read the file.");
         }
     }
-
-
 }
