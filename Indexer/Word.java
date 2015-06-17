@@ -1,9 +1,10 @@
 package Indexer;
 
+import Indexer.persisters.TermType;
 import Indexer.persisters.TermsMysqlPersister;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Word {
 
@@ -12,7 +13,11 @@ public class Word {
     private final Integer deletionsMaxDepth = 2;
 
     private String word;
-    private Set<String> terms = new HashSet<>();
+
+    /**
+     * Terms: the key contains the term and value - edit tistance
+     */
+    private Map<String, Integer> terms = new HashMap<>();
 
     public Word(String word) {
         this.word = normalizer(word);
@@ -54,10 +59,12 @@ public class Word {
         generateTerms();
 
         TermsMysqlPersister persister = new TermsMysqlPersister();
-        persister.saveWord(word);
-        persister.saveTerms(terms);
 
-        // TODO: save terms (put SQL in different class)
+        // save the word
+        Long wordId = persister.saveTerm(word, TermType.WORD);
+
+        // save all terms
+        persister.saveTerms(terms, wordId);
     }
 
     /**
@@ -93,9 +100,9 @@ public class Word {
             StringBuilder newTerm = new StringBuilder(word);
             newTerm.deleteCharAt(i);
 
-            if(!terms.contains(newTerm)) {
+            if(!terms.containsKey(newTerm)) {
                 // add term
-                terms.add(newTerm.toString());
+                terms.put(newTerm.toString(), deletionsMaxDepth - depth + 1); // TODO: check is this edit distance correct
 
                 // generate next level terms
                 generateDeletions(newTerm.toString(), newDepth);

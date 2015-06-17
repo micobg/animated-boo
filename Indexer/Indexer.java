@@ -40,8 +40,6 @@ public class Indexer {
                         word.save();
                     }
                 }
-
-
             });
         } catch (IOException ex) {
             throw new IndexerException("Cannot read the file.");

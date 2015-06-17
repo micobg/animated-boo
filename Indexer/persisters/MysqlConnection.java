@@ -29,20 +29,21 @@ public class MysqlConnection {
     /**
      * Initialize MySQL connection.
      *
-     * @return Connnection object
+     * @return Connection object
      */
     private static Connection initConnection() {
         Connection connection = null;
 
         try {
-            connection =  DriverManager.getConnection(
+
+            Class.forName("java.sql");
+            connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost/" + MysqlConfig.DB_NAME + "?" +
                     "user=" + MysqlConfig.DB_USER +
                     "&password=" + MysqlConfig.DB_PASS
             );
-        } catch (SQLException e) {
+        } catch (/*SQL*/Exception e) {
             System.err.println("Cannot connect ot database.");
-
         }
 
         return connection;
