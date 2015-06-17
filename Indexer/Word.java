@@ -1,5 +1,7 @@
 package Indexer;
 
+import Indexer.persisters.TermsMysqlPersister;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,13 +15,34 @@ public class Word {
     private Set<String> terms = new HashSet<>();
 
     public Word(String word) {
-        this.word = word;
+        this.word = normalizer(word);
     }
 
+    /**
+     * Normalize given word - remove free spaces, convert to lower case and etc.
+     *
+     * @param word given word as String
+     *
+     * @return normalized word as String
+     */
+    private String normalizer(String word) {
+        return word.trim().toLowerCase();
+    }
+
+    /**
+     * Is the word shorter than minimum word length.
+     *
+     * @return true if it is too short
+     */
     public boolean isShort() {
         return word.length() < minWordLength;
     }
 
+    /**
+     * Is the word stop word.
+     *
+     * @return true if it is stop word
+     */
     public boolean isStopWord() {
         return StopWords.isStopWord(word);
     }
@@ -29,6 +52,10 @@ public class Word {
      */
     public void save() {
         generateTerms();
+
+        TermsMysqlPersister persister = new TermsMysqlPersister();
+        persister.saveWord(word);
+        persister.saveTerms(terms);
 
         // TODO: save terms (put SQL in different class)
     }
@@ -41,8 +68,7 @@ public class Word {
             word.length() - minTermLength :
             deletionsMaxDepth;
 
-        StringBuilder wordObject = new StringBuilder(word);
-        generateDeletions(wordObject, depth);
+        generateDeletions(word, depth);
     }
 
     /**
@@ -51,7 +77,7 @@ public class Word {
      * @param word word that to be used for generating new terms
      * @param depth depth of deletions (if it is 0 then stop recursion)
      */
-    private void generateDeletions(StringBuilder word, Integer depth) {
+    private void generateDeletions(String word, Integer depth) {
         if(depth < 1) {
             return;
         }
@@ -64,14 +90,15 @@ public class Word {
         Integer newDepth = depth - 1;
 
         for(Integer i = 0; i < word.length(); i++) {
-            StringBuilder newTerm = word.deleteCharAt(i);
+            StringBuilder newTerm = new StringBuilder(word);
+            newTerm.deleteCharAt(i);
 
             if(!terms.contains(newTerm)) {
                 // add term
                 terms.add(newTerm.toString());
 
                 // generate next level terms
-                generateDeletions(newTerm, newDepth);
+                generateDeletions(newTerm.toString(), newDepth);
             }
         }
     }
