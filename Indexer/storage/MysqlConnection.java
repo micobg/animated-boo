@@ -1,12 +1,10 @@
-package Indexer.persisters;
+package Indexer.storage;
 
 import config.MysqlConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class MysqlConnection {
 
@@ -44,6 +42,7 @@ public class MysqlConnection {
                     "&password=" + MysqlConfig.DB_PASS.toString()
             );
         } catch (/*SQL*/Exception e) {
+            // TODO: fix exception handling
             System.err.println("Cannot connect ot database.");
         }
 

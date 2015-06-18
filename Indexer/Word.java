@@ -2,9 +2,11 @@ package Indexer;
 
 import Indexer.persisters.TermType;
 import Indexer.persisters.TermsMysqlPersister;
+import Indexer.storage.RedisConnector;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Word {
 
@@ -15,7 +17,7 @@ public class Word {
     private String word;
 
     /**
-     * Terms: the key contains the term and value - edit tistance
+     * Terms: the key contains the term and value - edit distance
      */
     private Map<String, Integer> terms = new HashMap<>();
 
@@ -59,6 +61,19 @@ public class Word {
         generateTerms();
 
         TermsMysqlPersister persister = new TermsMysqlPersister();
+
+        /**
+         * TODO: Redis example
+         */
+//        //Connecting to Redis server on localhost
+//        Jedis redis = RedisConnector.getConnection();
+//
+//        redis.sadd("test", "коноп");
+//        redis.sadd("test", "зеле");
+//        ScanResult<String> list = redis.sscan("test", "0");
+//        list.getResult().forEach((s) -> {
+//            System.out.println("Stored string in redis:: " + s);
+//        });
 
         // save the word
         Long wordId = persister.saveTerm(word, TermType.WORD);

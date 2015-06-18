@@ -1,8 +1,9 @@
 package Indexer.persisters;
 
+import Indexer.storage.MysqlConnection;
+
 import java.sql.*;
 import java.util.Map;
-import java.util.Set;
 
 public class TermsMysqlPersister {
 
@@ -20,7 +21,7 @@ public class TermsMysqlPersister {
      */
     public Long saveTerm(String word, TermType type) {
         Long id = 0L;
-        String checkSql = "SELECT id FROM terms WHERE term = ? AND type = ";
+        String checkSql = "SELECT id FROM terms WHERE term = ? AND type = ?";
         String insertSql = "INSERT INTO terms(term, type) VALUES(?, ?)";
 
         try  {
