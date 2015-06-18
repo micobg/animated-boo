@@ -19,11 +19,10 @@ public class Indexer {
         try {
             readFile(pathToFile);
         } catch (IndexerException ex) {
-            // TODO: handle exception
-            System.out.println("Error!");
+            System.out.println(ex.getMessage());
         }
 
-        System.out.println("Hi!");
+        System.out.println("Indexing done!");
     }
 
     private static void readFile(Path pathToFile) throws IndexerException {

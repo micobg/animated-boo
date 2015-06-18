@@ -102,7 +102,7 @@ public class Word {
 
             if(!terms.containsKey(newTerm)) {
                 // add term
-                terms.put(newTerm.toString(), deletionsMaxDepth - depth + 1); // TODO: check is this edit distance correct
+                terms.put(newTerm.toString(), deletionsMaxDepth - depth + 1);
 
                 // generate next level terms
                 generateDeletions(newTerm.toString(), newDepth);
