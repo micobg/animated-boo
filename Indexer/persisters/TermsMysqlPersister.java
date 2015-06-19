@@ -3,8 +3,8 @@ package Indexer.persisters;
 import Indexer.storage.MysqlConnection;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 
 public class TermsMysqlPersister {
 
@@ -18,15 +18,11 @@ public class TermsMysqlPersister {
      */
     public Long saveTerm(String word, TermType type) {
         Long id = 0L;
-        String checkSql = "SELECT id FROM terms WHERE term = ? AND type = ?";
         String insertSql = "INSERT INTO terms(term, type) VALUES(?, ?)";
 
         try  {
             Connection mysqlConnection = MysqlConnection.getConnection();
-            PreparedStatement checkStatement = mysqlConnection.prepareStatement(checkSql);
             PreparedStatement insertStatement = mysqlConnection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
-
-
 
             insertStatement.setNString(1, word);
             insertStatement.setString(2, type.toString());
@@ -41,26 +37,13 @@ public class TermsMysqlPersister {
     }
 
     /**
-     * Save all terms and their relations to given word
-     *
-     * @param terms  the id of the term
-     * @param wordId the id of the word
-     */
-    public void saveTerms(Map<String, Integer> terms, Long wordId) {
-        terms.forEach((term, editDistance) -> {
-            Long termId = saveTerm(term, TermType.TERM);
-            saveRelation(termId, wordId, editDistance);
-        });
-    }
-
-    /**
      * Save relations between terms and words.
      *
      * @param termId       the id of the term
      * @param wordId       the id of the word
      * @param editDistance count of deletions that are made to get the term from the word
      */
-    private void saveRelation(Long termId, Long wordId, Integer editDistance) {
+    public void saveRelation(Long termId, Long wordId, Integer editDistance) {
         String sql = "INSERT INTO relations(word_id, term_id, edit_distance) VALUES(?, ?, ?)";
 
         try  {
@@ -122,6 +105,58 @@ public class TermsMysqlPersister {
             }
         } catch (SQLException ex) {
             System.err.println("SQL error on fetching term " + word + " : " + ex.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * Change type of given term to 'word'.
+     *
+     * @param wordId id of the term
+     */
+    public void convertTermToWord(Long wordId) {
+        String sql = "UPDATE terms SET type = ? WHERE id = ?";
+
+        try  {
+            Connection mysqlConnection = MysqlConnection.getConnection();
+            PreparedStatement sqlStatement = mysqlConnection.prepareStatement(sql);
+
+            sqlStatement.setString(1, TermType.WORD.toString());
+            sqlStatement.setLong(2, wordId);
+
+            sqlStatement.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("SQL error on converting term " + wordId + " to word: " + ex.getMessage());
+        }
+    }
+
+    // TODO: documentation
+    public Set<Long> getInheritedRelations(Long termId, Integer editDistance) {
+        Set<Long> result = new HashSet<>();
+        String sql = "" +
+            "SELECT terms.id " +
+            "FROM terms " +
+            "JOIN relations " +
+                "ON terms.id = relations.word_id " +
+            "WHERE " +
+                "terms.id = ? " +
+                "AND relations.edit_distance = ?";
+
+        try  {
+            Connection mysqlConnection = MysqlConnection.getConnection();
+            PreparedStatement sqlStatement = mysqlConnection.prepareStatement(sql);
+
+            sqlStatement.setLong(1, termId);
+            sqlStatement.setInt(1, editDistance);
+
+            ResultSet resultSet = sqlStatement.executeQuery();
+
+            while(resultSet.next()) {
+                result.add(resultSet.getLong("id"));
+            }
+        } catch (SQLException ex) {
+            System.err.println("SQL error on fetching inherited relations of term " + termId + " : " + ex.getMessage());
         }
 
         return result;
