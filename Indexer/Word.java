@@ -2,9 +2,7 @@ package Indexer;
 
 import Indexer.persisters.TermType;
 import Indexer.persisters.TermsMysqlPersister;
-import Indexer.storage.RedisConnector;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.ScanResult;
+import Indexer.persisters.TermsRedisPersister;
 
 import java.util.*;
 
@@ -58,34 +56,32 @@ public class Word {
      * Save the word and all terms that can be created by deletions.
      */
     public void save() {
-        generateTerms();
+        TermsMysqlPersister mysqlPersister = new TermsMysqlPersister();
+        TermsRedisPersister redisPersister = new TermsRedisPersister();
 
-        TermsMysqlPersister persister = new TermsMysqlPersister();
+        Map<String, Object> wordData = mysqlPersister.fetchTerm(word);
 
-        /**
-         * TODO: Redis example
-         */
-//        //Connecting to Redis server on localhost
-//        Jedis redis = RedisConnector.getConnection();
-//
-//        redis.sadd("test", "коноп");
-//        redis.sadd("test", "зеле");
-//        ScanResult<String> list = redis.sscan("test", "0");
-//        list.getResult().forEach((s) -> {
-//            System.out.println("Stored string in redis:: " + s);
-//        });
+        if (wordData.isEmpty()) {
+            // save the word
+            redisPersister.saveTerm(word, TermType.WORD);
+            Long wordId = mysqlPersister.saveTerm(word, TermType.WORD);
 
-        // save the word
-        Long wordId = persister.saveTerm(word, TermType.WORD);
+            // save all terms
+            generateTerms(wordId);
+        } else if (wordData.get("type") == TermType.TERM.toString()) {
+            // TODO
+        }
+        // else if (wordData.get("type") == TermType.WORD.toString()) => nothing to do
+
 
         // save all terms
-        persister.saveTerms(terms, wordId);
+//        persister.saveTerms(terms, wordId);
     }
 
     /**
      * Generate all possible terms by deletions depends on word length and minimum term length.
      */
-    private void generateTerms() {
+    private void generateTerms(Long wordId) {
         Integer depth = word.length() < minTermLength + deletionsMaxDepth ?
             word.length() - minTermLength :
             deletionsMaxDepth;

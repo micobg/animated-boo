@@ -3,13 +3,10 @@ package Indexer.persisters;
 import Indexer.storage.MysqlConnection;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TermsMysqlPersister {
-
-    public TermsMysqlPersister() {
-        //
-    }
 
     /**
      * Save into database given word/term.
@@ -98,5 +95,35 @@ public class TermsMysqlPersister {
         }
 
         return key;
+    }
+
+    /**
+     * Fetch term's data by given word string.
+     *
+     * @param word searched term
+     *
+     * @return HasMap of id and type of the term (or empty HasMap if the term is not found)
+     */
+    public Map<String, Object> fetchTerm(String word) {
+        Map<String, Object> result = new HashMap<>();
+        String sql = "SELECT id, type FROM terms WHERE term = ?";
+
+        try  {
+            Connection mysqlConnection = MysqlConnection.getConnection();
+            PreparedStatement sqlStatement = mysqlConnection.prepareStatement(sql);
+
+            sqlStatement.setString(1, word);
+
+            ResultSet resultSet = sqlStatement.executeQuery();
+
+            while(resultSet.next()) {
+                result.put("id", resultSet.getLong("id"));
+                result.put("type", resultSet.getString("type"));
+            }
+        } catch (SQLException ex) {
+            System.err.println("SQL error on fetching term " + word + " : " + ex.getMessage());
+        }
+
+        return result;
     }
 }
