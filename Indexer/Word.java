@@ -3,8 +3,6 @@ package Indexer;
 import Indexer.persisters.TermType;
 import Indexer.persisters.TermsMysqlPersister;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -140,10 +138,6 @@ public class Word {
                 for (Long relationId : getInheritedRelations) {
                     mysqlPersister.saveRelation(relationId, id, editDistance);
                 }
-
-//                getInheritedRelations.forEach((termId) ->
-//                        mysqlPersister.saveRelation(termId, (Long)termData.get("id"), editDistance)
-//                );
             }
         }
     }
