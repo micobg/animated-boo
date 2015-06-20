@@ -5,7 +5,6 @@ import Indexer.storage.MysqlConnection;
 import java.sql.*;
 import java.util.*;
 
-
 public class TermsMysqlPersister {
 
     /**
@@ -138,9 +137,9 @@ public class TermsMysqlPersister {
             "SELECT terms.id " +
             "FROM terms " +
             "JOIN relations " +
-                "ON terms.id = relations.word_id " +
+                "ON terms.id = relations.term_id " +
             "WHERE " +
-                "terms.id = ? " +
+                "relations.word_id = ? " +
                 "AND relations.edit_distance = ?";
 
         try  {
@@ -148,7 +147,7 @@ public class TermsMysqlPersister {
             PreparedStatement sqlStatement = mysqlConnection.prepareStatement(sql);
 
             sqlStatement.setLong(1, termId);
-            sqlStatement.setInt(1, editDistance);
+            sqlStatement.setInt(2, editDistance);
 
             ResultSet resultSet = sqlStatement.executeQuery();
 

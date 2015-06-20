@@ -3,6 +3,8 @@ package Indexer;
 import Indexer.persisters.TermType;
 import Indexer.persisters.TermsMysqlPersister;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,11 +115,11 @@ public class Word {
 
             TermsMysqlPersister mysqlPersister = new TermsMysqlPersister();
 
-            Map<String, Object> termData = mysqlPersister.fetchTerm(word);
+            Map<String, Object> termData = mysqlPersister.fetchTerm(normalizer(newTerm.toString()));
 
             if (termData.isEmpty()) {
                 // save the term and relation
-                Long termId = mysqlPersister.saveTerm(word, TermType.TERM);
+                Long termId = mysqlPersister.saveTerm(newTerm.toString(), TermType.TERM);
                 mysqlPersister.saveRelation(termId, id, editDistance);
 
                 // generate next level terms
@@ -134,10 +136,14 @@ public class Word {
                 Set<Long> getInheritedRelations =
                     mysqlPersister.getInheritedRelations((Long)termData.get("id"), deletionsMaxDepth - editDistance);
 
-                // add all inherited related terms ar relation of the term (termData)
-                getInheritedRelations.forEach((termId) ->
-                    mysqlPersister.saveRelation(termId, (Long)termData.get("id"), editDistance)
-                );
+                // add all inherited related terms as relation of the word
+                for (Long relationId : getInheritedRelations) {
+                    mysqlPersister.saveRelation(relationId, id, editDistance);
+                }
+
+//                getInheritedRelations.forEach((termId) ->
+//                        mysqlPersister.saveRelation(termId, (Long)termData.get("id"), editDistance)
+//                );
             }
         }
     }
