@@ -111,6 +111,8 @@ public class Word {
             StringBuilder newTerm = new StringBuilder(word);
             newTerm.deleteCharAt(i);
 
+            // TODO: refactor this method and make it reusable (for Corrector)
+
             TermsMysqlPersister mysqlPersister = new TermsMysqlPersister();
 
             Map<String, Object> termData = mysqlPersister.fetchTerm(normalizer(newTerm.toString()));

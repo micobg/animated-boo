@@ -1,11 +1,11 @@
 package Indexer;
 
+import models.TextManipulator;
+
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Index all words in given text.
@@ -25,21 +25,21 @@ public class Indexer {
         System.out.println("Indexing done!");
     }
 
+    /**
+     * Read file and save all the words.
+     *
+     * @param pathToFile Path object to file to be read
+     *
+     * @throws IndexerException if something went wrong
+     */
     private static void readFile(Path pathToFile) throws IndexerException {
+        TextManipulator textManipulator = new TextManipulator();
+        textManipulator.setWorker(TextManipulator.Workers.SAVE_WORD);
+
         try {
-            Files.lines(pathToFile).forEach((String line) -> {
-                Pattern pattern = Pattern.compile("\\p{L}+");
-                Matcher matcher = pattern.matcher(line);
-
-                // extract words
-                while (matcher.find()) {
-                    Word word = new Word(matcher.group());
-
-                    if (!word.isShort() && !word.isStopWord()) {
-                        word.save();
-                    }
-                }
-            });
+            Files.lines(pathToFile).forEach((String line) ->
+                textManipulator.extractWords(line)
+            );
         } catch (IOException ex) {
             throw new IndexerException("Cannot read the file.");
         }
