@@ -1,5 +1,7 @@
 package Corrector;
 
+import models.text.TextManipulator;
+import models.text.TextManipulatorCorrector;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,11 +14,10 @@ public class Corrector {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
             String input;
-
-            while((input = br.readLine()) != null){
-                System.out.println(input);
+            while((input = br.readLine()) != null) {
+                TextManipulator textManipulator = new TextManipulatorCorrector();
+                textManipulator.extractWords(input);
             }
-
         } catch(IOException io) {
             System.err.println("Read input error.");
         }

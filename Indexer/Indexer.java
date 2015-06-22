@@ -1,6 +1,7 @@
 package Indexer;
 
-import models.TextManipulator;
+import models.text.TextManipulator;
+import models.text.TextManipulatorIndexer;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -33,8 +34,7 @@ public class Indexer {
      * @throws IndexerException if something went wrong
      */
     private static void readFile(Path pathToFile) throws IndexerException {
-        TextManipulator textManipulator = new TextManipulator();
-        textManipulator.setWorker(TextManipulator.Workers.SAVE_WORD);
+        TextManipulator textManipulator = new TextManipulatorIndexer();
 
         try {
             Files.lines(pathToFile).forEach((String line) ->
