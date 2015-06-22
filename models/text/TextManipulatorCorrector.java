@@ -1,12 +1,24 @@
 package models.text;
 
-import models.word.Word;
 import models.word.WordCorrector;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
 
 public class TextManipulatorCorrector extends TextManipulator {
 
-    public void wordWorker(String word) {
-        Word wordObject = new WordCorrector(word);
+    protected StringBuffer inputText = new StringBuffer();
+    protected StringBuffer correctedText = new StringBuffer();
+
+    /**
+     *
+     *
+     * @param matcher the word
+     */
+    public void wordWorker(Matcher matcher) {
+        WordCorrector word = new WordCorrector(matcher.group());
+
 
         /**
          * TODO:
@@ -16,8 +28,11 @@ public class TextManipulatorCorrector extends TextManipulator {
          *  -- load al words that are related with this terms
          */
 
-        if (!wordObject.isShort() && !wordObject.isStopWord()) {
-            // word.***();
+        if (word.isCorrect()) {
+            matcher.appendReplacement(inputText, word.toString());
+            matcher.appendReplacement(correctedText, word.toString());
+        } else {
+            word.findBestSuggestion();
         }
     }
 }

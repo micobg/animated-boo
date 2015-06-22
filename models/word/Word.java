@@ -69,6 +69,15 @@ public abstract class Word {
     }
 
     /**
+     * Return the word as String.
+     *
+     * @return
+     */
+    public String toString() {
+        return word;
+    }
+
+    /**
      * Save the word and all terms that can be created by deletions.
      */
     public void save() {

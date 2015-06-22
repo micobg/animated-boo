@@ -1,15 +1,21 @@
 package models.text;
 
-import models.word.Word;
 import models.word.WordIndexer;
+
+import java.util.regex.Matcher;
 
 public class TextManipulatorIndexer extends TextManipulator {
 
-    public void wordWorker(String word) {
-        Word wordObject = new WordIndexer(word);
+    /**
+     * Call save() method for every word if it is not stop word or too short.
+     *
+     * @param word the word
+     */
+    public void wordWorker(Matcher matcher) {
+        WordIndexer word = new WordIndexer(matcher.group());
 
-        if (!wordObject.isShort() && !wordObject.isStopWord()) {
-            wordObject.save();
+        if (!word.isShort() && !word.isStopWord()) {
+            word.save();
         }
     }
 }

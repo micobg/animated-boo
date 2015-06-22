@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public abstract class TextManipulator {
 
-    public abstract void wordWorker(String word);
+    public abstract void wordWorker(Matcher word);
 
     /**
      * Split given text to words and call a worker for each of them.
@@ -18,7 +18,7 @@ public abstract class TextManipulator {
 
         // extract words
         while (matcher.find()) {
-            wordWorker(matcher.group());
+            wordWorker(matcher);
         }
     }
 }

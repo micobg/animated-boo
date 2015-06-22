@@ -12,10 +12,10 @@ public class Corrector {
     public static void main (String args[]) {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            TextManipulator textManipulator = new TextManipulatorCorrector();
 
             String input;
             while((input = br.readLine()) != null) {
-                TextManipulator textManipulator = new TextManipulatorCorrector();
                 textManipulator.extractWords(input);
             }
         } catch(IOException io) {

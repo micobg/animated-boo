@@ -160,4 +160,46 @@ public class TermsMysqlPersister {
 
         return result;
     }
+
+    public Set<String> loadRelatedWords(Set<String> terms) {
+        Set<String> result = new HashSet<>();
+        String sql = "" +
+                "SELECT terms.term " +
+                "FROM terms " +
+                "JOIN relations " +
+                    "ON terms.id = relations.word_id " +
+                "WHERE " +
+                    "terms.type = ? " +
+                    "AND relations.term_id IN (" +
+                        "SELECT id " +
+                        "FROM terms " +
+                        "WHERE term IN (" +
+                            String.join(", ", Collections.nCopies(terms.size(), "?")) +
+                        ")" +
+                    ")" +
+                "ORDER BY relations.edit_distance ASC";
+
+        try  {
+            Connection mysqlConnection = MysqlConnection.getConnection();
+            PreparedStatement sqlStatement = mysqlConnection.prepareStatement(sql);
+
+            sqlStatement.setString(1, TermType.WORD.toString());
+
+            Integer index = 2;
+            for(String term : terms) {
+                sqlStatement.setString(index, term);
+                index++;
+            }
+
+            ResultSet resultSet = sqlStatement.executeQuery();
+
+            while(resultSet.next()) {
+                result.add(resultSet.getString("term"));
+            }
+        } catch (SQLException ex) {
+            System.err.println("SQL error on fetching related words by terms : " + ex.getMessage());
+        }
+
+        return result;
+    }
 }
