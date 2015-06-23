@@ -1,7 +1,7 @@
 package models.word;
 
-import Indexer.persisters.TermType;
-import Indexer.persisters.TermsMysqlPersister;
+import persisters.TermType;
+import persisters.TermsMysqlPersister;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,6 +1,6 @@
-package Indexer.persisters;
+package persisters;
 
-import Indexer.storage.RedisConnector;
+import storage.RedisConnector;
 import redis.clients.jedis.Jedis;
 
 public class TermsRedisPersister {

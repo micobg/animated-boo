@@ -34,7 +34,7 @@ public class Indexer {
      * @throws IndexerException if something went wrong
      */
     private static void readFile(Path pathToFile) throws IndexerException {
-        TextManipulator textManipulator = new TextManipulatorIndexer();
+        TextManipulatorIndexer textManipulator = new TextManipulatorIndexer();
 
         try {
             Files.lines(pathToFile).forEach((String line) ->

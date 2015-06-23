@@ -1,4 +1,4 @@
-package Indexer.persisters;
+package persisters;
 
 public enum TermType {
 

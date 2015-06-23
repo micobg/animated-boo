@@ -1,10 +1,9 @@
-package Indexer.storage;
+package storage;
 
 import config.MysqlConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class MysqlConnection {
 

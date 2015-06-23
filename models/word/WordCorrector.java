@@ -1,7 +1,7 @@
 package models.word;
 
-import Indexer.persisters.TermType;
-import Indexer.persisters.TermsMysqlPersister;
+import persisters.TermType;
+import persisters.TermsMysqlPersister;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +25,7 @@ public class WordCorrector extends Word {
      * @return true if the word is correct
      */
     public boolean isCorrect() {
-        return id != null && type == TermType.WORD.toString();
+        return id != null && type.equals(TermType.WORD.toString());
     }
 
     /**
@@ -42,13 +42,11 @@ public class WordCorrector extends Word {
         generateTerms(term, depth);
     }
 
-    public void findBestSuggestion() {
+    public String findBestSuggestion() {
         generateTerms(word, wordMaxDeletionDepth);
 
-        // load all words that are related with this terms
-        TermsMysqlPersister mysqlPersister = new TermsMysqlPersister();
-        Set<String> relatedWords = mysqlPersister.loadRelatedWords(terms);
-
         // return word with smallest editDistance
+        TermsMysqlPersister mysqlPersister = new TermsMysqlPersister();
+        return mysqlPersister.loadSuggestion(terms);
     }
 }

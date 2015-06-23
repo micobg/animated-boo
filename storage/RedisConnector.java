@@ -1,4 +1,4 @@
-package Indexer.storage;
+package storage;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;

@@ -9,7 +9,7 @@ public class TextManipulatorIndexer extends TextManipulator {
     /**
      * Call save() method for every word if it is not stop word or too short.
      *
-     * @param word the word
+     * @param matcher Matcher that match the words
      */
     public void wordWorker(Matcher matcher) {
         WordIndexer word = new WordIndexer(matcher.group());
