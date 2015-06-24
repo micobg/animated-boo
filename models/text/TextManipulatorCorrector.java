@@ -9,7 +9,8 @@ public class TextManipulatorCorrector extends TextManipulator {
     protected StringBuffer inputText = null;
     protected StringBuffer correctedText = null;
 
-    protected Integer offset = 0;
+    protected Integer inputTextOffset = 0;
+    protected Integer correctedTextOffset = 0;
 
     /**
      * Split given text to words and call a worker for each of them.
@@ -48,12 +49,14 @@ public class TextManipulatorCorrector extends TextManipulator {
 
             // show and correct the mistake
             if (suggestion != null) {
-                inputText = inputText.replace(matcher.start() + offset, matcher.end() + offset, "<" + word.toString() + ">");
-                correctedText = correctedText.replace(matcher.start(), matcher.end(), suggestion);
+                Integer wordDiff = suggestion.length() - word.toString().length();
 
-                Integer wordDiff = word.toString().length() + 2 - suggestion.length();
+                inputText = inputText.replace(matcher.start() + inputTextOffset, matcher.end() + inputTextOffset, "<" + word.toString() + ">");
+                correctedText = correctedText.replace(matcher.start() + correctedTextOffset, matcher.end() + correctedTextOffset, suggestion);
+
+                inputTextOffset += 2;
                 if (wordDiff != 0) {
-                    offset += wordDiff;
+                    correctedTextOffset += wordDiff;
                 }
             }
         }
